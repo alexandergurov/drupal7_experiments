@@ -1,0 +1,5 @@
+name = JW Player Fitvids
+description = JW Player Fitvids
+core = 7.x
+dependencies[] = jw_player
+dependencies[] = fitvids

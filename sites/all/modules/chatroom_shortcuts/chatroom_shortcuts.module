@@ -1,0 +1,92 @@
+<?php
+
+function chatroom_shortcuts_menu() {
+  $items = array();
+  $items['admin/config/chatroom_shortcuts'] = array(
+    'title' => 'Chatroom Shortcuts',
+    'description' => 'Chatroom Shortcuts Settings',
+    'weight' => -100,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+  $items['admin/config/chatroom_shortcuts/shortcuts_list'] = array(
+    'title' => 'Shortcuts list',
+    'description' => 'Chatroom Shortcuts List',
+    'page callback' => 'chatroom_shortcuts_list',
+    'access arguments' => array('administer site configuration'),
+  );  
+  return $items;
+}
+
+function chatroom_shortcuts_list() {
+  return drupal_get_form('chatroom_shortcuts_list_form');
+}
+
+
+function chatroom_shortcuts_list_form() {
+  $shortcuts = variable_get('chatroom_shortcuts_list', '');
+  if (is_array($shortcuts)) {
+    foreach ($shortcuts as $key => $value) {
+      $shortcut = implode("=", $value);
+      $shortcuts[$key] = $shortcut;
+    }
+    $shortcuts = implode("\n", $shortcuts);
+  }else
+    $shortcuts = '';
+  $form = array(
+      'shortcuts_list' => array(
+          '#title' => t('Shortcuts'),
+          '#type' => 'textarea',
+          '#description' => t('Enter one shortcut in a line in next format: shortcut button  = shortcut message'),
+          '#default_value' => $shortcuts,
+          '#cols' => 120,
+          '#rows' => 10,
+      ),
+      'submit' => array(
+          '#type' => 'submit',
+          '#value' => t('Save')
+      ),
+  );
+  return $form;
+}
+
+function chatroom_shortcuts_list_form_submit($form_id, $form_values) {
+  if (!empty($form_values['values']['shortcuts_list'])) {
+    $shortcuts = explode("\n", $form_values['values']['shortcuts_list']);
+
+    foreach ($shortcuts as $key => $value) {
+      $shortcut = explode("=", $value);
+      unset($shortcuts[$key]);
+      $shortcuts[$key] = array('button' => trim($shortcut[0]), 'message' => trim($shortcut[1]));
+    }
+    variable_set('chatroom_shortcuts_list', $shortcuts);
+  } else {
+    variable_set('chatroom_shortcuts_list', '');
+  }
+  drupal_set_message('Shortcuts was saved', 'status');
+}
+
+function chatroom_shortcuts_form_chatroom_irc_buttons_form_alter(&$form, $form_state) {
+  $chatroom = $form_state["build_info"]["args"][0];
+  $allowed_roles = $chatroom->get('allowedRoles');
+  if (in_array(22, $allowed_roles) || in_array(17, $allowed_roles)) {
+    $shortcuts = variable_get('chatroom_shortcuts_list', '');
+    if (is_array($shortcuts)) {
+      drupal_add_js(drupal_get_path('module', 'chatroom_shortcuts') . '/chatroom_shortcuts.js', 'file');
+      foreach ($shortcuts as $key => $shortcut) {
+        drupal_add_js(array('chatroom_shortcuts' => array('shortcuts' => array('chatroom_shortcuts_button_' . $key))), 'setting');
+        $form['chatroom_shortcuts_button_' . $chatroom->get('cid') . '_' . $key] = array(
+            '#type' => 'submit',
+            '#value' => $shortcut['button'],
+            '#attributes' => array('class' => array('chatroom_shortcuts_button'))
+        );
+        $form['chatroom_shortcuts_message_' . $chatroom->get('cid') . '_' . $key] = array(
+            '#type' => 'hidden',
+            '#value' => $shortcut['message'],
+        );
+      }
+    }
+  }
+}

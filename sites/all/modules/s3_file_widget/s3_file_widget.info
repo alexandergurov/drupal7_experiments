@@ -1,0 +1,5 @@
+name = Amazon S3 File Widget
+description = File field widget for files alredy uploaded to amazon s3
+package = Chat
+core = 7.x
+version = 7.x-1.1-dev

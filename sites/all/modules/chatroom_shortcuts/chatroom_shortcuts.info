@@ -1,0 +1,7 @@
+name = Chat Room Shortcuts
+description = Adds Shortcut buttons on chatrooms
+package = Chat
+core = 7.x
+version = 7.x-1.0-dev
+files[] = chatroom_additions.module
+dependencies[] = chatroom

@@ -1,0 +1,21 @@
+<?php
+
+function jw_player_fitvids_ctools_plugin_post_alter(&$plugin, &$info) {
+  // Override a function defined by the plugin.
+  if ($info['type'] == 'export_ui') {
+    if($plugin['name']=='jw_player_ctools_export_ui'){
+      unset($plugin['form']['validate']);
+    }
+  }
+}
+
+function  jw_player_fitvids_preprocess_jw_player(&$variables){
+  $variables['config']['events']['onReady'] = 'deattachFitvidsBehavior';
+  drupal_add_js(array('fitvids' => array('process' => FALSE)), 'setting');
+}
+
+//function jw_player_fitvids_form_alter(&$form, &$form_state, $form_id){
+//  if($form_id == 'ctools_export_ui_edit_item_form'){  
+//    dpm($form_state);
+//  }
+//}
