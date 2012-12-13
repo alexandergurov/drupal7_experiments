@@ -1,5 +1,5 @@
-name = Chat Room Archivation of chats
-description = Sheduling rules for archivation of chats in separate nodes
+name = Chatroom Archiving of chats
+description = Scheduling rules for archiving chats 
 package = Chat
 core = 7.x
 dependencies[] = chatroom
