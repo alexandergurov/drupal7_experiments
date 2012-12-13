@@ -1,0 +1,3 @@
+[submodule "sites/all/modules/chatroom_timezone"]
+	path = sites/all/modules/chatroom_timezone
+	url = alexrbd@git.drupal.org:project/chatroom_timezone.git
